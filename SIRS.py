@@ -3,17 +3,20 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
 # N = total population
-N = 1000
+N = 10
 
 # Initial number of infected and recovered individuals, I0 and R0.
-I0, R0 = 500, 0
+I0, R0 = 2, 0
 
 # Everyone else, S0, is susceptible to infection initially.
 S0 = N - I0 - R0
 
 # Contact rate, beta, and mean recovery rate, gamma, (in 1/days).
 # beta, gamma = 0.2, 1./10
-beta, gamma = 0.4,  1./100
+beta, gamma = 0.3,  1./100
+
+# Individual's decreasing immunity
+xi = 0.2
 
 # birth and death rate
 birthRate = .0185
@@ -27,9 +30,9 @@ t = np.linspace(0, 256, 256)
 # The SIR model differential equations.
 def deriv(y, t, N, beta, gamma):
     S, I, R = y
-    dSdt = birthRate*N -beta * S * I / N - deathRate*S
+    dSdt = birthRate*N -beta * S * I / N + xi*R - deathRate*S
     dIdt = beta * S * I / N - gamma * I - deathRate*I
-    dRdt = gamma * I - deathRate*R
+    dRdt = gamma * I - xi*R - deathRate*R
     # dSdt = -beta * S * I / N
     # dIdt = beta * S * I / N - gamma * I
     # dRdt = gamma * I
@@ -46,9 +49,9 @@ fig = plt.figure(facecolor='w')
 # ax = fig.add_subplot(111, axis_bgcolor='#dddddd', axisbelow=True)
 ax = fig.add_subplot(111, axisbelow=True)
 
-ax.plot(t, S/1000, 'b', alpha=0.5, lw=2, label='Susceptible')
-ax.plot(t, I/1000, 'r', alpha=0.5, lw=2, label='Infected')
-ax.plot(t, R/1000, 'g', alpha=0.5, lw=2, label='Recovered with immunity')
+ax.plot(t, S/N, 'b', alpha=0.5, lw=2, label='Susceptible')
+ax.plot(t, I/N, 'r', alpha=0.5, lw=2, label='Infected')
+ax.plot(t, R/N, 'g', alpha=0.5, lw=2, label='Recovered with immunity')
 ax.set_xlabel('Time /days')
 ax.set_ylabel('Number (1000s)')
 ax.set_ylim(0,1.2)
